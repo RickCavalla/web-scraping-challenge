@@ -1,1 +1,2 @@
-# This is a placeholder
+# Scraping done.
+# Flask page next...
