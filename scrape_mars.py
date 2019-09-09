@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 import pandas as pd
 from splinter import Browser
 from bs4 import BeautifulSoup
@@ -16,191 +13,120 @@ import time
 debug_mode = False
 
 
-# In[2]:
+def scrape():
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    browser = Browser('chrome', **executable_path, headless=False)
 
+    # URL of page to be scraped
+    url = 'https://mars.nasa.gov/news/'
 
-executable_path = {'executable_path': 'chromedriver.exe'}
-browser = Browser('chrome', **executable_path, headless=False)
+    browser.visit(url)
 
+    # it takes a second for javascript to run and generate html of page
+    time.sleep(1)
 
-# In[3]:
+    html = browser.html
 
+    # Create BeautifulSoup object
+    soup = BeautifulSoup(html, 'html.parser')
 
-# URL of page to be scraped
-url = 'https://mars.nasa.gov/news/'
+    news_title = soup.find("div", class_="list_text").a.text
 
-browser.visit(url)
+    if debug_mode:
+        print(news_title)
 
-# it takes a second for javascript to run and generate html of page
-time.sleep(1)
+    news_p = soup.find("div", class_="article_teaser_body").text
 
-html = browser.html
+    if debug_mode:
+        print(news_p)
 
+    # URL of page to be scraped
+    base_url = 'https://www.jpl.nasa.gov'
+    soup_url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
 
-# In[4]:
+    browser.visit(soup_url)
 
+    time.sleep(1)
 
-# Create BeautifulSoup object
-soup = BeautifulSoup(html, 'html.parser')
+    html = browser.html
 
+    soup = BeautifulSoup(html, 'html.parser')
 
-# In[5]:
+    img_anchor = soup.find("a", class_="button fancybox")
+    featured_img_url = base_url + img_anchor.get("data-fancybox-href")
 
+    if debug_mode:
+        print(featured_img_url)
 
-news_title = soup.find("div", class_="list_text").a.text
+    # URL of page to be scraped
+    base_url = 'https://twitter.com/marswxreport'
+    soup_url = 'https://twitter.com/marswxreport?lang=en'
 
-if debug_mode:
-    print(news_title)
+    browser.visit(soup_url)
 
+    time.sleep(1)
 
-# In[6]:
+    html = browser.html
 
+    soup = BeautifulSoup(html, 'html.parser')
 
-news_p = soup.find("div", class_="article_teaser_body").text
+    tweet_p = soup.find("p", class_="tweet-text")
+    mars_weather = tweet_p.text
 
-if debug_mode:
-    print(news_p)
+    if debug_mode:
+        print(mars_weather)
 
+    facts_url = "https://space-facts.com/mars/"
 
-# In[7]:
+    tables = pd.read_html(facts_url)
 
+    facts_html = tables[1].to_html().replace('\n', '')
 
-# URL of page to be scraped
-base_url = 'https://www.jpl.nasa.gov'
-soup_url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
+    if debug_mode:
+        print(facts_html)
 
-browser.visit(soup_url)
+    # The site for Mars hemisphere images referenced in homework returns error 404.
+    # I found a page at "The Planetary Society" that includes Mars hemisphere images
+    # I am using that.  Hopefully it does not go 404 soon!
 
-time.sleep(1)
+    # URL of page to be scraped
+    url = 'http://www.planetary.org/blogs/guest-blogs/bill-dunford/20140203-the-faces-of-mars.html'
 
-html = browser.html
+    browser.visit(url)
 
+    # it takes a second for javascript to run and generate html of page
+    time.sleep(1)
 
-# In[8]:
+    html = browser.html
 
+    soup = BeautifulSoup(html, 'html.parser')
 
-soup = BeautifulSoup(html, 'html.parser')
+    # All the hemisphere images at this site have a class of "img840"
+    images_list = soup.find_all("img", class_="img840")
 
+    hemisphere_image_urls = []
 
-# In[9]:
+    for img in images_list:
+        img_title = img.get("alt")
+        img_url = img.get("src")
+        img_dict = {"title": img_title, "img_url": img_url}
+        hemisphere_image_urls.append(img_dict)
 
-
-img_anchor = soup.find("a", class_="button fancybox")
-featured_img_url = base_url + img_anchor.get("data-fancybox-href")
-
-if debug_mode:
-    print(featured_img_url)
-
-
-# In[10]:
-
-
-# URL of page to be scraped
-base_url = 'https://twitter.com/marswxreport'
-soup_url = 'https://twitter.com/marswxreport?lang=en'
-
-browser.visit(soup_url)
-
-time.sleep(1)
-
-html = browser.html
-
-
-# In[11]:
-
-
-soup = BeautifulSoup(html, 'html.parser')
-
-
-# In[12]:
-
-
-tweet_p = soup.find("p", class_="tweet-text")
-mars_weather = tweet_p.text
-
-if debug_mode:
-    print(mars_weather)
-
-
-# In[13]:
-
-
-facts_url = "https://space-facts.com/mars/"
-
-tables = pd.read_html(facts_url)
-
-facts_html = tables[1].to_html().replace('\n', '')
-
-if debug_mode:
-    print(facts_html)
-
-
-# In[14]:
-
-
-# The site for Mars hemisphere images referenced in homework returns error 404.
-# I found a page at "The Planetary Society" that includes Mars hemisphere images
-# I am using that.  Hopefully it does not go 404 soon!
-
-# URL of page to be scraped
-url = 'http://www.planetary.org/blogs/guest-blogs/bill-dunford/20140203-the-faces-of-mars.html'
-
-browser.visit(url)
-
-# it takes a second for javascript to run and generate html of page
-time.sleep(1)
-
-html = browser.html
-
-
-# In[15]:
-
-
-soup = BeautifulSoup(html, 'html.parser')
-
-
-# In[16]:
-
-
-# All the hemisphere images at this site have a class of "img840"
-images_list = soup.find_all("img", class_="img840")
-
-hemisphere_image_urls = []
-
-for img in images_list:
-    img_title = img.get("alt")
-    img_url = img.get("src")
-    img_dict = {"title": img_title, "img_url": img_url}
-    hemisphere_image_urls.append(img_dict)
-    
-if debug_mode:
-    print(hemisphere_image_urls)
-
-
-# In[17]:
-
-
-mars_dict = {
-    "news_title": news_title,
-    "news_p": news_p,
-    "featured_img_url": featured_img_url,
-    "mars_weather": mars_weather,
-    "facts_html": facts_html,
-    "hemisphere_image_urls": hemisphere_image_urls
-}
-
-if debug_mode:
-    pprint(mars_dict)
-
-
-# In[18]:
-
-
-browser.quit()
-
-
-# In[ ]:
-
-
-
-
+    if debug_mode:
+        print(hemisphere_image_urls)
+
+    mars_dict = {
+        "news_title": news_title,
+        "news_p": news_p,
+        "featured_img_url": featured_img_url,
+        "mars_weather": mars_weather,
+        "facts_html": facts_html,
+        "hemisphere_image_urls": hemisphere_image_urls
+    }
+
+    if debug_mode:
+        pprint(mars_dict)
+
+    browser.quit()
+
+    return mars_dict
