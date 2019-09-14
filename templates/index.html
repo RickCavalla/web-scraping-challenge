@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mission To Mars</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
 
 <body>
@@ -17,12 +18,28 @@
       <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
     </div>
 
-    <!-- Craigslist Listings -->
-    <div class="row" id="mars-data">
+    <!-- Mars Web Page -->
+    <div class="row">
       <div class="col-md-12">
-        <h4 class="heading">{{mars.hemisphere_image_urls[0]["title"]}}</h4>
-        <img src="{{mars.hemisphere_image_urls[0]['img_url']}}">
-        <small>Test2</small>
+        <h2>Latest Mars News</h2><br>
+        <h4>{{mars.news_title}}</h4>
+        <small>{{mars.news_p}}</small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Featured Mars Image</h2><br>
+        <img class="img-fluid" src="{{mars.featured_img_url}}">
+      </div>
+      <div class="col-md-4">
+        <div class="col-md-12 div-border">
+        <h4>Current Weather on Mars</h4><br>
+        <small>{{mars.mars_weather}}</small>
+        </div>
+        <div class="col-md-12">
+        <h4>Mars Facts</h4><br>
+        {{mars.facts_html|safe}}
+        </div>
       </div>
     </div>
 

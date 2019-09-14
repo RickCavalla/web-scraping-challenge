@@ -70,8 +70,12 @@ def scrape():
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    tweet_p = soup.find("p", class_="tweet-text")
-    mars_weather = tweet_p.text
+    tweet_p = soup.find_all("p", class_="tweet-text")
+
+    for tweet in tweet_p:
+        if tweet.text.startswith("InSight"):
+            mars_weather = tweet.text
+            break
 
     if debug_mode:
         print(mars_weather)
@@ -80,7 +84,14 @@ def scrape():
 
     tables = pd.read_html(facts_url)
 
-    facts_html = tables[1].to_html().replace('\n', '')
+    facts_table = tables[1]
+    facts_table = facts_table.rename(columns={0: "Description", 1: "Value"})
+    facts_table = facts_table.set_index("Description")
+
+    if debug_mode:
+        print(facts_table)
+
+    facts_html = facts_table.to_html().replace('\n', '')
 
     if debug_mode:
         print(facts_html)
