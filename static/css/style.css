@@ -1,4 +1,24 @@
+/* Mars colored stylings */
+
+.mars-bg {
+    background-color: orangered
+}
+
+.mars-hr {
+    border: 1px solid orangered
+}
+
 .div-border {
-    border: 5px solid lightgray;
+    border: 2px solid orangered;
+    padding: 5px
+}
+
+/* Give weather tweet a bit less of column... */
+.div-h33 {
     height: 33%
+}
+
+/* ...and facts table a bit more of column */
+.div-h67 {
+    height: 67%
 }
