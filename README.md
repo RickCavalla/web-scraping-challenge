@@ -6,5 +6,5 @@
 #
 # mission_to_mars.ipynb = testing notebook for scraping
 # app.py = flask app
-# scrape_mars = function version of notebook code, which
+# scrape_mars.py = function version of notebook code, which
 #     does the scraping in flask app 
