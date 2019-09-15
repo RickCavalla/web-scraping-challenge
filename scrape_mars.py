@@ -160,6 +160,7 @@ def scrape():
     
     if debug_mode:
         print(hemisphere_image_urls)
+
     # create a big dictionary with all mars data
     mars_dict = {
         "news_title": news_title,
